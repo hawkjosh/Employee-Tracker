@@ -1,0 +1,26 @@
+{
+  "name": "module12-employee-tracker-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hawkjosh/module12-employee-tracker-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hawkjosh/module12-employee-tracker-challenge/issues"
+  },
+  "homepage": "https://github.com/hawkjosh/module12-employee-tracker-challenge#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^6.3.1",
+    "mysql2": "^2.3.3"
+  }
+}
