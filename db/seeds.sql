@@ -1,25 +1,40 @@
 INSERT INTO departments (dept_name)
-VALUES ("Sales"),
-       ("Engineering"),
-       ("Finance"),
-       ("Legal");
+VALUES ('Production'),
+       ('Marketing'),
+       ('Accounting'),
+       ('Maintenance'),
+       ('Human Resources');
 
 INSERT INTO roles (title, salary, dept_id)
-VALUES ("Sales Lead", 100000, 1),
-       ("Salesperson", 80000, 1),
-       ("Lead Engineer", 150000, 2),
-       ("Software Engineer", 120000, 2),
-       ("Account Manager", 160000, 3),
-       ("Accountant", 125000, 3),
-       ("Legal Team Lead", 250000, 4),
-       ("Lawyer", 190000, 4);
+VALUES ('Production Supervisor', 121998, 1),
+       ('Marketing Supervisor', 154001, 2),
+       ('Accounting Supervisor', 148800, 3),
+       ('Maintenance Supervisor', 115918, 4),
+       ('Human Resources Supervisor', 119792, 5),
+       ('Production Assistant', 84527, 1),
+       ('Marketing Assistant', 96083, 2),
+       ('Accounting Assistant', 117576, 3),
+       ('Maintenance Assistant', 64572, 4),
+       ('Human Resources Assistant', 81625, 5);
 
 INSERT INTO employees (first_name, last_name, role_id, mgr_id)
-VALUES ("John", "Doe", 1, NULL),
-       ("Mike", "Chan", 2, 1),
-       ("Ashley", "Rodriguez", 3, NULL),
-       ("Kevin", "Tupik", 4, 3),
-       ("Kunal", "Singh", 5, NULL),
-       ("Malia", "Brown", 6, 5),
-       ("Sarah", "Lourd", 7, NULL),
-       ("Tom", "Allen", 8, 8);
+VALUES ('Michael', 'Jordan', 1, NULL),
+       ('Candace', 'Parker', 2, NULL),
+       ('Michael', 'Phelps', 3, NULL),
+       ('Abby', 'Wambach', 4, NULL),
+       ('Peyton', 'Manning', 5, NULL),
+       ('Ronda', 'Rousey', 6, 1),
+       ('Bo', 'Jackson', 7, 2),
+       ('Misty', 'May-Treanor', 8, 3),
+       ('Kareem', 'Abdul-Jabbar', 9, 4),
+       ('Natalie', 'Gulbis', 10, 5),
+       ('Joe', 'Montana', 6, 1),
+       ('Monica', 'Seles', 7, 2),
+       ('Ty', 'Cobb', 8, 3),
+       ('Mia', 'Hamm', 9, 4),
+       ('Tony', 'Hawk', 10, 5),
+       ('Anna', 'Kournikova', 6, 1),
+       ('Babe', 'Ruth', 7, 2),
+       ('Serena', 'Williams', 8, 3),
+       ('Wayne', 'Gretzky', 9, 4),
+       ('Shawn', 'Johnson', 10, 5);
