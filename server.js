@@ -28,6 +28,9 @@ const startApp = () => {
         'Add New Role',
         'Add New Employee',
         'Update Employee Role',
+        'Remove Department',
+        'Remove Role',
+        'Remove Employee',
         'Exit'
       ]
     }
@@ -53,6 +56,15 @@ const startApp = () => {
     }
     if (userInput.mainMenu === 'Update Employee Role') {
       updateRole();
+    }
+    if (userInput.mainMenu === 'Remove Department') {
+      removeDept();
+    }
+    if (userInput.mainMenu === 'Remove Role') {
+      removeRole();
+    }
+    if (userInput.mainMenu === 'Remove Employee') {
+      removeEmp();
     }
     if (userInput.mainMenu === 'Exit') {
       process.exit();
@@ -123,7 +135,7 @@ const addDept = () => {
   ]).then(userInput => {
     // Assigning variable to SQL syntax that inserts new department into table
     const sqlSyntax = `INSERT INTO departments (dept_name) VALUES (?)`;
-    // Assigning array variable to access user input from prompts
+    // Assigning variable to access user input from prompts
     const params = userInput.deptAdd;
     // Method to check for error and execute SQL query to add new department
     connection.query(sqlSyntax, params, (error) => {
@@ -253,11 +265,13 @@ const addEmp = () => {
         if (error) throw error;
         // Storing list of managers to use in prompt below
         const mgrList = results.map(({first_name, last_name, id}) => ({name: `${first_name} ${last_name}`, value: id}));
+        // Adding n/a option to list of managers
+        mgrList.push({name: 'N/A', value: null});
         // Continue command line prompt to add new employee
         inquirer.prompt([
           {
             type: 'list',
-            message: 'Please select a manager for the new employee from the list below:\n',
+            message: 'Please select a manager for the new employee from the list below (if none, choose N/A):\n',
             name: 'empMgrAdd',
             // Inserting stored list of managers as choices
             choices: mgrList
@@ -330,6 +344,108 @@ const updateRole = () => {
             return viewEmps();
           });
         });
+      });
+    });
+  });
+};
+
+// Function to remove department
+const removeDept = () => {
+  // Assigning variable to SQL syntax that returns department names
+  const sqlSyntax = `SELECT dept_name, id FROM departments ORDER BY dept_name ASC`;
+  // Method to check for error and execute SQL query to return list of departments
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of departments to use in prompt below
+    const deptList = results.map(({dept_name, id}) => ({name: dept_name, value: id}));
+    // Begin command line prompt to remove department
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select a department from the list below to remove:\n',
+        name: 'deptRemove',
+        // Inserting stored list of departments as choices
+        choices: deptList
+      }
+    ]).then(userInput => {
+      // Assigning variable to SQL syntax that removes department from table
+      const sqlSyntax = `DELETE FROM departments WHERE id = ?`;
+      // Assigning variable to access user input from prompts
+      const params = userInput.deptRemove;
+      // Method to check for error and execute SQL query to remove department
+      connection.query(sqlSyntax, params, (error) => {
+        if (error) throw error;
+        console.log('\n✅ Department has been successfully removed from the company database. Please see updated departments list below.');
+        // Calling function to display departments
+        return viewDepts();
+      });
+    });
+  });
+};
+
+// Function to remove role
+const removeRole = () => {
+  // Assigning variable to SQL syntax that returns role titles
+  const sqlSyntax = `SELECT title, id FROM roles ORDER BY title ASC`;
+  // Method to check for error and execute SQL query to return list of roles
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of roles to use in prompt below
+    const roleList = results.map(({title, id}) => ({name: title, value: id}));
+    // Begin command line prompt to remove role
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select a role from the list below to remove:\n',
+        name: 'roleRemove',
+        // Inserting stored list of roles as choices
+        choices: roleList
+      }
+    ]).then(userInput => {
+      // Assigning variable to SQL syntax that removes role from table
+      const sqlSyntax = `DELETE FROM roles WHERE id = ?`;
+      // Assigning variable to access user input from prompts
+      const params = userInput.roleRemove;
+      // Method to check for error and execute SQL query to remove role
+      connection.query(sqlSyntax, params, (error) => {
+        if (error) throw error;
+        console.log('\n✅ Role has been successfully removed from the company database. Please see updated roles list below.');
+        // Calling function to display roles
+        return viewRoles();
+      });
+    });
+  });
+};
+
+// Function to remove employee
+const removeEmp = () => {
+  // Assigning variable to SQL syntax that returns employee names
+  const sqlSyntax = `SELECT first_name, last_name, id FROM employees ORDER BY last_name ASC`;
+  // Method to check for error and execute SQL query to return list of employees
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of employees to use in prompt below
+    const empList = results.map(({first_name, last_name, id}) => ({name: `${first_name} ${last_name}`, value: id}));
+    // Begin command line prompt to remove employee
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select an employee from the list below to remove:\n',
+        name: 'empRemove',
+        // Inserting stored list of employees as choices
+        choices: empList
+      }
+    ]).then(userInput => {
+      // Assigning variable to SQL syntax that removes employee from table
+      const sqlSyntax = `DELETE FROM employees WHERE id = ?`;
+      // Assigning variable to access user input from prompts
+      const params = userInput.empRemove;
+      // Method to check for error and execute SQL query to remove employee
+      connection.query(sqlSyntax, params, (error) => {
+        if (error) throw error;
+        console.log('\n✅ Employee has been successfully removed from the company database. Please see updated employees list below.');
+        // Calling function to display employees
+        return viewEmps();
       });
     });
   });
