@@ -28,6 +28,9 @@ const startApp = () => {
         'Add New Role',
         'Add New Employee',
         'Update Employee Role',
+        'Update Manager',
+        'View Employees By Manager',
+        'View Employees By Department',
         'Remove Department',
         'Remove Role',
         'Remove Employee',
@@ -56,6 +59,15 @@ const startApp = () => {
     }
     if (userInput.mainMenu === 'Update Employee Role') {
       updateRole();
+    }
+    if (userInput.mainMenu === 'Update Manager') {
+      updateMgr();
+    }
+    if (userInput.mainMenu === 'View Employees By Manager') {
+      viewByMgr();
+    }
+    if (userInput.mainMenu === 'View Employees By Department') {
+      viewByDept();
     }
     if (userInput.mainMenu === 'Remove Department') {
       removeDept();
@@ -344,6 +356,131 @@ const updateRole = () => {
             return viewEmps();
           });
         });
+      });
+    });
+  });
+};
+
+// Function to update manager
+const updateMgr = () => {
+  // Assigning variable to SQL syntax that returns employee names
+  const sqlSyntax = `SELECT first_name, last_name, id FROM employees ORDER BY last_name ASC`;
+  // Method to check for error and execute SQL query to return list of employees
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of employees to use in prompt below
+    const empList = results.map(({first_name, last_name, id}) => ({name: `${first_name} ${last_name}`, value: id}));
+    // Begin command line prompt to update manager
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select an employee from the list below to update their manager:\n',
+        name: 'empSelect',
+        // Inserting stored list of employees as choices
+        choices: empList
+      },
+    ]).then(userInput => {
+      // Assigning array variable to access user input from prompts
+      const params = [userInput.empSelect];
+      // Assigning variable to SQL syntax that returns manager names
+      const sqlSyntax = `SELECT first_name, last_name, id FROM employees WHERE mgr_id IS NULL ORDER BY last_name ASC`;
+      // Method to check for error and execute SQL query to return list of managers
+      connection.query(sqlSyntax, (error, results) => {
+        if (error) throw error;
+        // Storing list of managers to use in prompt below
+        const mgrList = results.map(({first_name, last_name, id}) => ({name: `${first_name} ${last_name}`, value: id}));
+        // Continue command line prompt to update manager
+        inquirer.prompt([
+          {
+            type: 'list',
+            message: 'Please select a new manager for the employee from the list below:\n',
+            name: 'mgrSelect',
+            // Inserting stored list of managers as choices
+            choices: mgrList
+          }
+        ]).then(userInput => {
+          // Adding user input from prompt above for manager to previously assigned array variable
+          params.unshift(userInput.mgrSelect);
+          // Assigning variable to SQL syntax that updates manager into table
+          const sqlSyntax = `UPDATE employees SET mgr_id = ? WHERE id = ?`;
+          // Method to check for error and execute SQL query to update manager
+          connection.query(sqlSyntax, params, (error) => {
+            if (error) throw error;
+            console.log('\n✅ Employee\'s new manager has been successfully updated in the company database. Please see updated employees list below.');
+            // Calling function to display employees
+            return viewEmps();
+          });
+        });
+      });
+    });
+  });
+};
+
+// Function to view employees by manager
+const viewByMgr = () => {
+  // Assigning variable to SQL syntax that returns manager names
+  const sqlSyntax = `SELECT first_name, last_name, id FROM employees WHERE mgr_id IS NULL ORDER BY last_name ASC`;
+  // Method to check for error and execute SQL query to return list of managers
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of managers to use in prompt below
+    const mgrList = results.map(({first_name, last_name, id}) => ({name: `${first_name} ${last_name}`, value: id}));
+    // Begin command line prompt to view employees by manager
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select a manager from the list below to view their employees:\n',
+        name: 'mgrSelect',
+        // Inserting stored list of managers as choices
+        choices: mgrList
+      }
+    ]).then(userInput => {
+      // Assigning variable to SQL syntax that displays employees by manager
+      const sqlSyntax = `SELECT employees.id AS "ID", CONCAT(employees.first_name, ' ', employees.last_name) AS "NAME", roles.title AS "TITLE", CONCAT('$', format(roles.salary,2)) AS "SALARY" FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.dept_id = departments.id WHERE mgr_id = ? ORDER BY last_name ASC`;
+      // Assigning variable to access user input from prompts
+      const params = userInput.mgrSelect;
+      // Method to check for error and display SQL query results for employees by manager view
+      connection.query(sqlSyntax, params, (error, byMgrDisplay) => {
+        if (error) throw error;
+        console.log('\n• • • COMPANY EMPLOYEES BY MANAGER • • •\n');
+        console.table(byMgrDisplay);
+        // Calling function returning to main menu
+        return startApp();
+      });
+    });
+  });
+};
+
+// Function to view employees by department
+const viewByDept = () => {
+  // Assigning variable to SQL syntax that returns department names
+  const sqlSyntax = `SELECT dept_name, id FROM departments ORDER BY dept_name ASC`;
+  // Method to check for error and execute SQL query to return list of departments
+  connection.query(sqlSyntax, (error, results) => {
+    if (error) throw error;
+    // Storing list of departments to use in prompt below
+    const deptList = results.map(({dept_name, id}) => ({name: dept_name, value: id}));
+    // Begin command line prompt to view employees by department
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Please select a department from the list below to view it\s employees:\n',
+        name: 'deptSelect',
+        // Inserting stored list of departments as choices
+        choices: deptList
+      }
+    ]).then(userInput => {
+      // Assigning variable to SQL syntax that displays employees by department
+      const sqlSyntax = `SELECT employees.id AS "ID", CONCAT(employees.first_name, ' ', employees.last_name) AS "NAME", roles.title AS "TITLE", CONCAT('$', format(roles.salary,2)) AS "SALARY" FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.dept_id = departments.id WHERE departments.id = ? ORDER BY last_name ASC`;
+      // Assigning variable to access user input from prompts
+      const params = userInput.deptSelect;
+      // Method to check for error and display SQL query results for employees by manager view
+      connection.query(sqlSyntax, params, (error, byMgrDisplay) => {
+        if (error) throw error;
+        console.log('\n• • • COMPANY EMPLOYEES BY DEPARTMENT • • •\n');
+        console.table(byMgrDisplay);
+        // Calling function returning to main menu
+        return startApp();
       });
     });
   });
