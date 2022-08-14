@@ -271,7 +271,7 @@ const addEmp = () => {
       // Assigning array variable to access user input from prompts
       const params = [userInput.empFirstNameAdd, userInput.empLastNameAdd, userInput.empRoleAdd];
       // Assigning variable to SQL syntax that returns employee names to use for manager selection
-      const sqlSyntax = `SELECT first_name, last_name, id FROM employees ORDER BY last_name ASC`;
+      const sqlSyntax = `SELECT first_name, last_name, id FROM employees WHERE mgr_id IS NULL ORDER BY last_name ASC`;
       // Method to check for error and execute SQL query to return list of employees
       connection.query(sqlSyntax, (error, results) => {
         if (error) throw error;
