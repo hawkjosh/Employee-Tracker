@@ -1,4 +1,4 @@
-# module12-employee-tracker-challenge
+# Employee-Tracker
 
 ## Description
 
